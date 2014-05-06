@@ -1,0 +1,35 @@
+namespace detail
+{
+
+template<>
+struct reply_traits<@XCB_CALL_NAME@_reply_t>
+{
+    typedef @XCB_CALL_NAME@_cookie_t cookie_type;
+
+    static @XCB_CALL_NAME@_reply_t *get_reply(xcb_connection_t *connection,
+                                              @XCB_CALL_NAME@_cookie_t cookie,
+                                              xcb_generic_error_t **error)
+    {
+        return @XCB_CALL_NAME@_reply(connection, cookie, error);
+    }
+};
+
+}
+
+class @CALL_NAME@ : public checked<@XCB_CALL_NAME@_reply_t>
+{
+public:
+    explicit @CALL_NAME@(@CALL_ARGS@)
+        : checked<@XCB_CALL_NAME@_reply_t>(@CONN_ARG@, @XCB_CALL_NAME@(@ARG_NAMES@))
+    {
+    }
+};
+
+class @CALL_NAME@_unchecked : public unchecked<@XCB_CALL_NAME@_reply_t>
+{
+public:
+    explicit @CALL_NAME@_unchecked(@CALL_ARGS@)
+        : unchecked<@XCB_CALL_NAME@_reply_t>(@CONN_ARG@, @XCB_CALL_NAME@_unchecked(@ARG_NAMES@))
+    {
+    }
+};

@@ -1,0 +1,8 @@
+class @CALL_NAME@ : public checked<void>
+{
+public:
+    explicit @CALL_NAME@(@CALL_ARGS@)
+        : checked<void>(@CONN_ARG@, @XCB_CALL_NAME@(@ARG_NAMES@))
+    {
+    }
+};
