@@ -17,7 +17,7 @@ before_script:
 script:
   - cmake ..
   - make
-  - ctest
+  - ctest --output-on-failure
 
 env:
   - CXXFLAGS=
