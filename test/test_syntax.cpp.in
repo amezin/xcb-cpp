@@ -1,0 +1,6 @@
+#include "@XCB_HEADER_BASENAME@.hpp"
+
+int main(int, char *[])
+{
+    return 0;
+}

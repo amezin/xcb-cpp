@@ -1,7 +1,18 @@
 #pragma once
 
+#define template template_
+#define explicit explicit_
+
+extern "C"
+{
+
 #include <xcb/xcb.h>
 #include <@XCB_HEADER@>
+
+}
+
+#undef template
+#undef explicit
 
 #include "request.hpp"
 

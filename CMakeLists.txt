@@ -1,6 +1,8 @@
 project(xcb-cpp)
 cmake_minimum_required(VERSION 2.8)
 
+add_definitions(-Wall)
+
 find_path(XCB_INCLUDE_DIR xcb/xcb.h)
 
 file(GLOB XCB_HEADERS RELATIVE "${XCB_INCLUDE_DIR}" "${XCB_INCLUDE_DIR}/xcb/*.h")
@@ -11,15 +13,15 @@ file(READ "${CMAKE_CURRENT_SOURCE_DIR}/void_call.hpp.in" VOID_CALL_TEMPLATE)
 function(generate_call OUTPUT XCB_CALL_NAME TEMPLATE ORIGINAL_CONTENT)
     string(REGEX REPLACE "^xcb_" "" CALL_NAME "${XCB_CALL_NAME}")
 
-    string(REGEX MATCH "${XCB_CALL_NAME}[ \\t\\r\\n]*\\([^)]*\\)" SIGNATURE "${ORIGINAL_CONTENT}")
-    string(REGEX REPLACE "^${XCB_CALL_NAME}[ \\t\\r\\n]*\\(" "" CALL_ARGS "${SIGNATURE}")
+    string(REGEX MATCH "${XCB_CALL_NAME} \\([^)]*\\)" SIGNATURE "${ORIGINAL_CONTENT}")
+    string(REGEX REPLACE "^${XCB_CALL_NAME} \\(" "" CALL_ARGS "${SIGNATURE}")
     string(REGEX REPLACE "\\)$" "" CALL_ARGS "${CALL_ARGS}")
     string(REGEX MATCHALL "[^,)]+" CALL_ARGS_LIST "${CALL_ARGS}")
 
     unset(CONN_ARG)
     foreach(CALL_ARG ${CALL_ARGS_LIST})
         string(STRIP "${CALL_ARG}" CALL_ARG)
-        string(REGEX MATCHALL "[a-z_]+" IDENTIFIERS "${CALL_ARG}")
+        string(REGEX MATCHALL "[^ *]+" IDENTIFIERS "${CALL_ARG}")
         list(GET IDENTIFIERS -1 ARG_NAME)
         if(NOT ARG_NAMES)
             set(ARG_NAMES "${ARG_NAME}")
@@ -43,32 +45,49 @@ function(generate_call OUTPUT XCB_CALL_NAME TEMPLATE ORIGINAL_CONTENT)
     endif()
 endfunction()
 
+function(strip_comments VAR)
+    string(REGEX REPLACE "/\\*([^*]|(\\*+[^*/]))*\\*+/" "" OUT "${${VAR}}")
+    set(${VAR} "${OUT}" PARENT_SCOPE)
+endfunction()
+
+function(strip_pp VAR)
+    set(OUT "${${VAR}}")
+    strip_comments(OUT)
+    string(REGEX REPLACE "^[ \t]*#[^\n]" "" OUT "${OUT}")
+    string(REGEX REPLACE "\n[ \t]*#[^\n]" "" OUT "${OUT}")
+    set(${VAR} "${OUT}" PARENT_SCOPE)
+endfunction()
+
+function(normalize_space VAR)
+    set(OUT "${${VAR}}")
+    strip_pp(OUT)
+    string(REGEX REPLACE "[ \t\r\n]+" " " OUT "${OUT}")
+    set(${VAR} "${OUT}" PARENT_SCOPE)
+endfunction()
+
 foreach(XCB_HEADER ${XCB_HEADERS})
     unset(ORIGINAL_CONTENT)
 
     file(READ "${XCB_INCLUDE_DIR}/${XCB_HEADER}" ORIGINAL_CONTENT)
-    string(REGEX REPLACE "/\\*([^*]|(\\*+[^*/]))*\\*+/" ""
-           ORIGINAL_CONTENT "${ORIGINAL_CONTENT}")
-    string(REGEX REPLACE "{[^}]*}" ""
-           ORIGINAL_CONTENT "${ORIGINAL_CONTENT}")
+    normalize_space(ORIGINAL_CONTENT)
 
     unset(REPLY_TYPES)
-    string(REGEX MATCHALL "[a-z_]+_reply_t" REPLY_TYPES "${ORIGINAL_CONTENT}")
-    list(REMOVE_DUPLICATES REPLY_TYPES)
+    string(REGEX MATCHALL "typedef struct xcb_[0-9a-z_]+_reply_t" REPLY_TYPES "${ORIGINAL_CONTENT}")
 
     unset(CONTENT)
     foreach(REPLY_TYPE ${REPLY_TYPES})
+        string(REGEX REPLACE "^typedef struct " "" REPLY_TYPE "${REPLY_TYPE}")
         string(REGEX REPLACE "_reply_t$" "" XCB_CALL_NAME "${REPLY_TYPE}")
         generate_call(REPLY "${XCB_CALL_NAME}" "${REPLY_TEMPLATE}" "${ORIGINAL_CONTENT}")
-        set(CONTENT "${CONTENT}\n${REPLY}")
+        set(CONTENT "${CONTENT}${REPLY}")
     endforeach()
 
     unset(VOID_CALLS)
-    string(REGEX MATCHALL "[a-z_]+_checked" VOID_CALLS "${ORIGINAL_CONTENT}")
-    list(REMOVE_DUPLICATES VOID_CALLS)
+    string(REGEX MATCHALL "xcb_void_cookie_t xcb_[0-9a-z_]+_checked" VOID_CALLS "${ORIGINAL_CONTENT}")
     foreach(XCB_CALL_NAME ${VOID_CALLS})
+        string(REGEX REPLACE "^xcb_void_cookie_t " "" XCB_CALL_NAME "${XCB_CALL_NAME}")
         generate_call(VOID_CALL "${XCB_CALL_NAME}" "${VOID_CALL_TEMPLATE}" "${ORIGINAL_CONTENT}")
-        set(CONTENT "${CONTENT}\n${VOID_CALL}")
+        set(CONTENT "${CONTENT}${VOID_CALL}")
     endforeach()
 
     get_filename_component(XCB_HEADER_BASENAME "${XCB_HEADER}" NAME_WE)

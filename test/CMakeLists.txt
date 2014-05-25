@@ -1,3 +1,16 @@
+foreach(XCB_HEADER ${XCB_HEADERS})
+    get_filename_component(XCB_HEADER_BASENAME "${XCB_HEADER}" NAME_WE)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/test_syntax.cpp.in"
+                   "${CMAKE_CURRENT_BINARY_DIR}/test_syntax_${XCB_HEADER_BASENAME}.cpp"
+                   @ONLY)
+    add_executable(test_syntax_${XCB_HEADER_BASENAME} EXCLUDE_FROM_ALL
+                   "${CMAKE_CURRENT_BINARY_DIR}/test_syntax_${XCB_HEADER_BASENAME}.cpp")
+    add_test(test_syntax_${XCB_HEADER_BASENAME}
+             ${CMAKE_COMMAND}
+             --build ${CMAKE_BINARY_DIR}
+             --target test_syntax_${XCB_HEADER_BASENAME})
+endforeach()
+
 set(TEST_SRCS
     unchecked_atom_intern.cpp
     checked_atom_intern.cpp
