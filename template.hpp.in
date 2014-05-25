@@ -1,5 +1,7 @@
 #pragma once
 
+#include <xcb/xcb.h>
+
 #define template template_
 #define explicit explicit_
 #define class class_
@@ -7,7 +9,6 @@
 extern "C"
 {
 
-#include <xcb/xcb.h>
 #include <@XCB_HEADER@>
 
 }
