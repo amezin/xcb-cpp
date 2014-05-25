@@ -65,11 +65,22 @@ function(normalize_space VAR)
     set(${VAR} "${OUT}" PARENT_SCOPE)
 endfunction()
 
+function(fix_cxx VAR KEYWORD)
+    set(OUT "${${VAR}}")
+    string(REGEX REPLACE " $KEYWORD ?," " $KEYWORD_," OUT "${OUT}")
+    string(REGEX REPLACE " $KEYWORD ?;" " $KEYWORD_;" OUT "${OUT}")
+    string(REGEX REPLACE " $KEYWORD ?\\)" " $KEYWORD_)" OUT "${OUT}")
+    set(${VAR} "${OUT}" PARENT_SCOPE)
+endfunction()
+
 foreach(XCB_HEADER ${XCB_HEADERS})
     unset(ORIGINAL_CONTENT)
 
     file(READ "${XCB_INCLUDE_DIR}/${XCB_HEADER}" ORIGINAL_CONTENT)
     normalize_space(ORIGINAL_CONTENT)
+    fix_cxx(ORIGINAL_CONTENT "class")
+    fix_cxx(ORIGINAL_CONTENT "template")
+    fix_cxx(ORIGINAL_CONTENT "explicit")
 
     unset(REPLY_TYPES)
     string(REGEX MATCHALL "typedef struct xcb_[0-9a-z_]+_reply_t" REPLY_TYPES "${ORIGINAL_CONTENT}")
