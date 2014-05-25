@@ -2,6 +2,7 @@
 
 #define template template_
 #define explicit explicit_
+#define class class_
 
 extern "C"
 {
@@ -13,6 +14,7 @@ extern "C"
 
 #undef template
 #undef explicit
+#undef class
 
 #include "request.hpp"
 
