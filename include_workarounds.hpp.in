@@ -1,0 +1,14 @@
+#define template template_
+#define explicit explicit_
+#define class class_
+
+extern "C"
+{
+
+#include <@XCB_HEADER@>
+
+}
+
+#undef template
+#undef explicit
+#undef class

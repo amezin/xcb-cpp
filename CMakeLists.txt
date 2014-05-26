@@ -9,6 +9,7 @@ file(GLOB XCB_HEADERS RELATIVE "${XCB_INCLUDE_DIR}" "${XCB_INCLUDE_DIR}/xcb/*.h"
 
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/reply.hpp.in" REPLY_TEMPLATE)
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/void_call.hpp.in" VOID_CALL_TEMPLATE)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/include_workarounds.hpp.in" INCLUDE_TEMPLATE)
 
 function(generate_call OUTPUT XCB_CALL_NAME TEMPLATE ORIGINAL_CONTENT)
     string(REGEX REPLACE "^xcb_" "" CALL_NAME "${XCB_CALL_NAME}")
@@ -102,6 +103,12 @@ foreach(XCB_HEADER ${XCB_HEADERS})
     endforeach()
 
     get_filename_component(XCB_HEADER_BASENAME "${XCB_HEADER}" NAME_WE)
+
+    if(XCB_HEADER STREQUAL "xcb/xcb.h")
+        unset(INCLUDE)
+    else()
+        string(CONFIGURE "${INCLUDE_TEMPLATE}" INCLUDE @ONLY)
+    endif()
 
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/template.hpp.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/${XCB_HEADER_BASENAME}.hpp")
