@@ -21,7 +21,7 @@ before_script:
 
 script:
   - cmake -DXCB_SKIP=ge;xf86vidmode;xinput ..
-  - make
+  - make -j5
   - ctest --output-on-failure
 
 env:
