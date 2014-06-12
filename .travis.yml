@@ -5,6 +5,7 @@ compiler:
   - clang
 
 before_install:
+  - sudo add-apt-repository ppa:xorg-edgers/ppa
   - sudo apt-get update -qq
 
 install:
