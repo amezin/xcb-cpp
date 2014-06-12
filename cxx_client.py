@@ -124,6 +124,7 @@ def cxx_name(name):
 
 def cxx_iterator(self):
     traits = CxxClass("iterator_traits<{}>".format(self.c_iterator_type))
+    traits.keyword = "struct"
     traits.public = ["typedef ptrdiff_t difference_type;",
                      "typedef {} value_type;".format(self.c_type),
                      "typedef {} *pointer;".format(self.c_type),
@@ -386,6 +387,6 @@ else:
     future_error = cxx_request_wrapper("future_error", "xcb_void_cookie_t")
     cxx_request_checked(future_error)
     xcb_ns.children.append(future_error)
-    std_ns.children.append(CxxTemplate("class iterator_traits;\n",
+    std_ns.children.append(CxxTemplate("struct iterator_traits;\n",
                                        "typename Iterator"))
     cxx_close(None)
