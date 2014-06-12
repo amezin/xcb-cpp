@@ -52,6 +52,8 @@ endforeach()
 generate("${CMAKE_CURRENT_BINARY_DIR}/xcb.hpp" "")
 set(generated ${generated} "${CMAKE_CURRENT_BINARY_DIR}/xcb.hpp")
 
+add_definitions(-Wall)
+
 add_custom_target(headers ALL DEPENDS ${generated})
 
 include(CTest)
