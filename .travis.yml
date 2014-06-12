@@ -5,11 +5,13 @@ compiler:
   - clang
 
 before_install:
-  - sudo add-apt-repository -y ppa:xorg-edgers/ppa
   - sudo apt-get update -qq
 
 install:
   - sudo apt-get install -qq cmake 'libxcb.*-dev' xcb-proto python-xcbgen
+  - pushd libxcb
+  - git checkout origin/1.8.1
+  - popd
 
 before_script:
   - "export DISPLAY=:99.0"

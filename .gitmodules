@@ -1,0 +1,3 @@
+[submodule "libxcb"]
+	path = libxcb
+	url = git://anongit.freedesktop.org/xcb/libxcb

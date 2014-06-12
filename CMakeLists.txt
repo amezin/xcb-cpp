@@ -21,10 +21,18 @@ function(generate output xml)
                                "${CMAKE_CURRENT_SOURCE_DIR}/cxx_client.py"
                                ${extra_args}
                                "${output}"
-                       DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/c_client.py"
+                       DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/c_client.py"
                                "${CMAKE_CURRENT_SOURCE_DIR}/cxx_client.py"
                                ${extra_dep})
 endfunction()
+
+add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/c_client.py"
+                   COMMAND "${CMAKE_COMMAND}"
+                           -DINPUT="${CMAKE_CURRENT_SOURCE_DIR}/libxcb/src/c_client.py"
+                           -DOUTPUT="${CMAKE_CURRENT_BINARY_DIR}/c_client.py"
+                           -P "${CMAKE_CURRENT_SOURCE_DIR}/make_c_client.cmake"
+                   DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/make_c_client.cmake"
+                           "${CMAKE_CURRENT_SOURCE_DIR}/libxcb/src/c_client.py")
 
 foreach(file ${XCB_PROTO_XMLS})
     get_filename_component(name "${file}" NAME_WE)
