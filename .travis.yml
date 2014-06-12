@@ -10,7 +10,7 @@ before_install:
 install:
   - sudo apt-get install -qq cmake 'libxcb.*-dev' xcb-proto python-xcbgen
   - pushd libxcb
-  - git checkout origin/1.8.1
+  - git checkout 1.8.1
   - popd
 
 before_script:
