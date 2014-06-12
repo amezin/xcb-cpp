@@ -9,22 +9,26 @@ find_path(XCB_PROTO_DIR "xcb.xsd" PATHS /usr/share PATH_SUFFIXES xcb)
 file(GLOB XCB_PROTO_XMLS "${XCB_PROTO_DIR}/*.xml")
 
 function(generate output xml)
-    if(xml STREQUAL "")
-        unset(extra_args)
-        unset(extra_dep)
-    else()
-        set(extra_args --xml "${xml}")
+    if(xml)
         set(extra_dep "${xml}")
+    else()
+        unset(extra_dep)
     endif()
     add_custom_command(OUTPUT "${output}"
-                       COMMAND "${PYTHON_EXECUTABLE}"
-                               "${CMAKE_CURRENT_SOURCE_DIR}/cxx_client.py"
-                               ${extra_args}
-                               "${output}"
-                       DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/c_client.py"
+                       COMMAND "${CMAKE_COMMAND}"
+                               -DCXX_CLIENT="${CMAKE_CURRENT_SOURCE_DIR}/cxx_client.py"
+                               -DPYTHON_EXECUTABLE="${PYTHON_EXECUTABLE}"
+                               -DPYTHONPATH="${CMAKE_CURRENT_BINARY_DIR}"
+                               -DXML="${xml}"
+                               -DOUTPUT="${output}"
+                               -P "${CMAKE_CURRENT_SOURCE_DIR}/generate_header.cmake"
+                       DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/generate_header.cmake"
+                               "${CMAKE_CURRENT_BINARY_DIR}/c_client.py"
                                "${CMAKE_CURRENT_SOURCE_DIR}/cxx_client.py"
                                ${extra_dep})
 endfunction()
+
+set(ENV{PYTHONPATH} "${CMAKE_CURRENT_BINARY_DIR}:$ENV{PYTHONPATH}")
 
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/c_client.py"
                    COMMAND "${CMAKE_COMMAND}"

@@ -287,10 +287,6 @@ def cxx_reply(type, checked=True):
 
     xcb_ns.path([ns]).children.append(wrapper)
 
-# hack to import generated c_client
-import sys, os
-sys.path.append(os.getcwd())
-
 import c_client
 
 def cxx_open(self):
