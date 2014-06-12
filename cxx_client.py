@@ -54,6 +54,7 @@ class CxxClass(object):
         self.protected = []
         self.private = []
         self.base = None
+        self.keyword = 'class'
 
     def format(self, indentation=''):
         children = []
@@ -67,10 +68,11 @@ class CxxClass(object):
         inner = [format_cxx_node(child, indentation + indentation_step) for child in children]
         base = (" : " + self.base) if self.base else ''
 
-        return "{i}class {n}{b}\n{i}{{\n{inner}{i}}};\n\n".format(i=indentation,
-                                                                  n=self.name,
-                                                                  b=base,
-                                                                  inner="".join(inner))
+        return "{i}{k} {n}{b}\n{i}{{\n{inner}{i}}};\n\n".format(i=indentation,
+                                                                k=self.keyword,
+                                                                n=self.name,
+                                                                b=base,
+                                                                inner="".join(inner))
 
 class CxxFunction(object):
     def __init__(self, signature):
