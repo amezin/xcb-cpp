@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 
 find_package(PythonInterp REQUIRED)
 
-set(XCB_SKIP ge xf86vidmode)
+set(XCB_SKIP "ge;xf86vidmode" CACHE STRING "Exclude some extensions")
 
 find_path(XCB_PROTO_DIR "xcb.xsd" PATHS /usr/share PATH_SUFFIXES xcb)
 file(GLOB XCB_PROTO_XMLS "${XCB_PROTO_DIR}/*.xml")
