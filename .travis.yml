@@ -20,7 +20,7 @@ before_script:
   - cd build
 
 script:
-  - cmake -DXCB_SKIP=ge;xf86vidmode;xinput ..
+  - cmake -DXCB_SKIP="ge;xf86vidmode;xinput" ..
   - make -j5
   - ctest --output-on-failure
 
