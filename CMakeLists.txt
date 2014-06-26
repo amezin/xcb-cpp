@@ -43,8 +43,6 @@ set(xcb_headers
 unset(generated_headers)
 foreach(header ${xcb_headers})
     if(EXISTS "${XCB_INCLUDE_DIR}/xcb/${header}")
-        message("Header ${header} isn't found, skipping")
-    else()
         add_custom_command(OUTPUT "${header}pp"
                            COMMAND "${PYTHON_EXECUTABLE}"
                                    "${CMAKE_CURRENT_SOURCE_DIR}/generator/cxx_client.py"
@@ -55,6 +53,8 @@ foreach(header ${xcb_headers})
                                    "${CMAKE_CURRENT_SOURCE_DIR}/generator/parse.py"
                                    "${CMAKE_CURRENT_SOURCE_DIR}/generator/template.h")
         list(APPEND generated_headers "${header}pp")
+    else()
+        message("Header ${header} isn't found, skipping")
     endif()
 endforeach()
 
