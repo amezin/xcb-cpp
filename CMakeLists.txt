@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(xcb-cpp)
 
-find_package(PythonInterp REQUIRED)
+find_package(PythonInterp 3 REQUIRED)
 
 find_path(XCB_INCLUDE_DIR xcb/xcb.h)
 if(NOT XCB_INCLUDE_DIR)
