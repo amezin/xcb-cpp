@@ -42,12 +42,14 @@ def generate(header, template):
         assert ast_util.is_simple_type_decl(length_type.node)
         reference_type = value_type
         if struct_needs_wrapper(value_type.name.full):
-            reference_type = make_ref(value_type)
+            typename = '::xcb::list< {}, {}, {} >'.format(value_type,
+                                                          length_type,
+                                                          make_ref(value_type))
         elif value_type.name.full == 'char':
-            return ast_util.TypeDecl('::xcb::string< ' +
-                                     length_type.name.qualified + ' >')
-        typename = '::xcb::list< {}, {}, {} >'.format(value_type, length_type,
-                                                      reference_type)
+            typename = '::xcb::string< ' + length_type.name.qualified + ' >'
+        else:
+            typename = '::xcb::list< {}, {} >'.format(value_type, length_type)
+
         return ast_util.TypeDecl(typename)
 
     def wrap_struct(struct):
@@ -66,7 +68,8 @@ def generate(header, template):
                                                           struct.name)
             assert not method_name in methods.keys()
             is_list = (ast_util.is_pointer(func.type) and
-                       func_name + '_length' in header.functions.keys())
+                       func_name + '_length' in header.functions.keys()
+                       and not ast_util.is_pointer_to(func.type, 'void'))
 
             if is_list:
                 list_methods.append(method_name + '_length')
@@ -112,7 +115,8 @@ def generate(header, template):
         call_args = [arg.name for arg in original_args]
         for i, arg in enumerate(original_args):
             if (arg.name + '_len' in call_args and
-                ast_util.is_simple_pointer(arg.type.node)):
+                ast_util.is_simple_pointer(arg.type.node)
+                and not ast_util.is_pointer_to(arg.type.node, 'void')):
                 length_idx = call_args.index(arg.name + '_len')
                 length_type = original_args[length_idx].type
                 value_type = ast_util.return_type(arg.type.node.type)

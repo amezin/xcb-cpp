@@ -57,7 +57,7 @@ public:
     class iterator : public std::iterator<std::random_access_iterator_tag,
                                           T,
                                           std::ptrdiff_t,
-                                          const Reference*,
+                                          const T*,
                                           Reference>
     {
     public:
@@ -66,14 +66,9 @@ public:
         {
         }
 
-        const Reference *operator->() const
-        {
-            return &ptr_;
-        }
-
         Reference operator *() const
         {
-            return ptr_;
+            return *ptr_;
         }
 
         iterator operator +(std::ptrdiff_t off)
@@ -120,9 +115,9 @@ public:
             return old;
         }
 
-        iterator operator -(iterator r)
+        std::ptrdiff_t operator -(iterator r)
         {
-            return iterator(ptr_ - r.ptr_);
+            return ptr_ - r.ptr_;
         }
 
         bool operator ==(const iterator &r) const
@@ -155,7 +150,7 @@ public:
             return ptr_ > r.ptr_;
         }
     private:
-        ref<T> ptr_;
+        const T *ptr_;
     };
 
     iterator begin() const
