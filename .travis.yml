@@ -1,8 +1,7 @@
-language: cpp
+language: python
 
-compiler:
-  - gcc
-  - clang
+python:
+  - "3.3"
 
 before_install:
   - sudo apt-get update -qq
@@ -20,7 +19,3 @@ script:
   - cmake ..
   - make -j5
   - ctest --output-on-failure
-
-env:
-  - CXXFLAGS=
-  - CXXFLAGS=-std=c++0x
