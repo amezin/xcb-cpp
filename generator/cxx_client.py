@@ -158,11 +158,13 @@ def generate(header, template):
         if struct_needs_wrapper(name):
             xcb_namespace.content.append(wrap_struct(struct))
 
+    root2 = namespaces.CxxRoot()
     for full_name, func in header.functions.items():
         name = namespaces.Name(full_name)
         wrapper = wrap_request(name, func)
         if wrapper:
-            root.path(name.split[:-1]).content.append(wrapper)
+            root2.path(name.split[:-1]).content.append(wrapper)
+    root.content.append(root2)
 
     return template.header(header, root, parse.NAME_FIXES)
 
