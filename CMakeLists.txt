@@ -61,10 +61,17 @@ endforeach()
 add_definitions(-Wall)
 add_custom_target(headers ALL DEPENDS ${generated_headers})
 
+include_directories("${CMAKE_CURRENT_BINARY_DIR}"
+                    "${CMAKE_CURRENT_SOURCE_DIR}"
+                    "${XCB_INCLUDE_DIR}")
+find_library(XCB_LIBRARY NAMES xcb)
+if(NOT XCB_LIBRARY)
+    message(FATAL_ERROR "Can't find libxcb")
+endif()
+
 include(CTest)
 if(BUILD_TESTING)
-    include_directories("${CMAKE_CURRENT_BINARY_DIR}"
-                        "${CMAKE_CURRENT_SOURCE_DIR}"
-                        "${XCB_INCLUDE_DIR}")
     add_subdirectory(test)
 endif()
+
+add_subdirectory(examples)

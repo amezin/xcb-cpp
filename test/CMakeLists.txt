@@ -1,8 +1,3 @@
-find_library(XCB_LIBRARY NAMES xcb)
-if(NOT XCB_LIBRARY)
-    message(FATAL_ERROR "Can't find libxcb")
-endif()
-
 file(GLOB TEST_SRCS
      RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
      "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
